@@ -68,4 +68,5 @@ public class User extends SlormDao<User> {
 除以上示例之外，Slorm也提供数据类型注解、映射注解、SQL片断注解等等。
 
 Slorm会在使用简单的前提上，提供不逊于Hibernate/IBatis的功能。
-###四、使用Slorm
+###四、使用Slorm进行操作
+TODO
