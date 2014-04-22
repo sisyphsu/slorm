@@ -33,7 +33,7 @@ public final class ConnectionContainer {
 	/**
 	 * Configuration properties file name
 	 */
-	private static final String propsFileName = "magicotm.properties";
+	private static final String PROPS_FILE = "slorm.properties";
 	
 	/**
 	 * the mapping table of ConnectionWrapper. this property will not be modified at runtime.
@@ -44,7 +44,7 @@ public final class ConnectionContainer {
 		connections = new HashMap<String, ConnectionWrapper>();
 		try {
 			Properties props = new Properties();
-			props.load(ClassLoader.getSystemResourceAsStream("slorm.properties"));
+			props.load(ClassLoader.getSystemResourceAsStream(PROPS_FILE));
 			Map<String, ComboPooledDataSource> dataSources = new HashMap<String, ComboPooledDataSource>();
 			for (Object _key : props.keySet()) {
 				String key = _key.toString();
@@ -81,11 +81,10 @@ public final class ConnectionContainer {
 					}
 				}
 			}catch(Exception ee){
-				
 				throw new RuntimeException("Cann't get DataSource from springframework !", ee);
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Exception occurs when reading " + propsFileName, e);
+			throw new RuntimeException("Exception occurs when reading " + PROPS_FILE, e);
 		}
 		
 		if(connections.keySet().size() >= 1){
