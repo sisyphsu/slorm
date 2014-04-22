@@ -26,7 +26,10 @@ Is it amazing?
 ###一、将Slorm添加入工程中
 ###二、配置数据源
 如果你使用Spring管理数据源，并且当前工程为WEB项目，那么就你就不需要针对Slorm做任何配置，Slorm会主动从Spring中搜寻合适的数据源。
-如果不符合上述条件，那么你就需要手动配置一下Slorm的数据源。手动配置Slorm数据源也是非常简单的，在CLASSPATH中添加一个slorm.properties文件即可。以下是slorm.properties文件样例：
+
+如果不符合上述条件，那么你就需要手动配置一下Slorm的数据源。手动配置Slorm数据源也是非常简单的，在CLASSPATH中添加一个slorm.properties文件即可。
+
+以下是slorm.properties文件样例：
 ```
 dataSource.dataSourceName1.driverClass=org.gjt.mm.mysql.Driver
 dataSource.dataSourceName1.user=blah
@@ -38,9 +41,13 @@ dataSource.dataSourceName2.password=blah
 dataSource.dataSourceName2.url=blah
 ```
 OK，数据源已经配置完成了。
+
 ###三、编写POJO
 Slorm使用继承的方式来增强POJO功能，因此你的POJO需要继承SlormDao。
-除此之外，你可能还需要为POJO添加上注解，标明该类对应的数据表和数据源，当然你也可以不添加注解，那么Slorm就会采用默认策略来处理该类。
+
+除此之外，你可能还需要为POJO添加上注解，标明该类对应的数据表和数据源。
+
+当然你也可以不添加注解，那么Slorm就会采用默认策略来处理该类。
 ```
 @Table(tableName = "user", dataSource="dataSourceName")
 public class User extends SlormDao<User> {
@@ -60,5 +67,7 @@ public class User extends SlormDao<User> {
 
 }
 ```
-除以上示例之外，Slorm也提供数据类型注解、映射注解、SQL片断注解等等。Slorm会在使用简单的前提上，提供不逊于Hibernate/IBatis的功能。
+除以上示例之外，Slorm也提供数据类型注解、映射注解、SQL片断注解等等。
+
+Slorm会在使用简单的前提上，提供不逊于Hibernate/IBatis的功能。
 ###四、使用Slorm
