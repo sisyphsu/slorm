@@ -1,6 +1,6 @@
 package com.slorm.core;
 
-import com.slorm.BaseDao;
+import com.slorm.SlormDao;
 import com.slorm.proxy.ReflectUtil;
 
 import java.lang.reflect.Field;
@@ -60,7 +60,7 @@ public final class Reference{
 	 */
 	public void initialize(){
 		// 处理targetType,因为此时它有可能是List,Set等等类型,需要提取出泛型类型
-		if(BaseDao.class.isAssignableFrom(targetType)){
+		if(SlormDao.class.isAssignableFrom(targetType)){
 			this.realTargetType = this.targetType;
 		}else{
 			if(List.class.equals(targetType) || Set.class.equals(targetType)){
@@ -125,7 +125,7 @@ public final class Reference{
 	 * @param value the value to set into the specific object.
 	 */
 	public<T> void setter(Object target, List<T> value){
-		if(BaseDao.class.isAssignableFrom(this.targetType)){
+		if(SlormDao.class.isAssignableFrom(this.targetType)){
 			ReflectUtil.set(target, this.name, value.get(0));
 		}else if(List.class.equals(this.targetType)){
 			ReflectUtil.set(target, this.name, value);

@@ -7,9 +7,7 @@ import com.slorm.connection.SpringConnectionWrapper;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,8 +26,7 @@ import java.util.Properties;
  * After initializing, this class will generate the ConnectionWrappers from the DataSources. the ConnectionWrapper is 
  * used for JDBC operating, details of the specific Connection management strategy is in the class ConnectionWrapper.
  * 
- * @author sulin
- * @date 2012-4-25
+ * Created by sulin on 2012-4-25.
  */
 public final class ConnectionContainer {
 
@@ -44,11 +41,10 @@ public final class ConnectionContainer {
 	private static Map<String, ConnectionWrapper> connections;
 	
 	static{
-		String classesPath = SQLContainer.class.getClassLoader().getResource("").toString().substring(5);
 		connections = new HashMap<String, ConnectionWrapper>();
 		try {
 			Properties props = new Properties();
-			props.load(new FileReader(new File(classesPath, propsFileName)));
+			props.load(ClassLoader.getSystemResourceAsStream("slorm.properties"));
 			Map<String, ComboPooledDataSource> dataSources = new HashMap<String, ComboPooledDataSource>();
 			for (Object _key : props.keySet()) {
 				String key = _key.toString();

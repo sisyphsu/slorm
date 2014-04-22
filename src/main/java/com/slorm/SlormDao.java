@@ -32,7 +32,7 @@ import java.util.List;
  * @date 2012-4-17 上午09:28:17
  */
 @SuppressWarnings("unchecked")
-public abstract class BaseDao<T> {
+public abstract class SlormDao<T> {
 
 	public Serializable $save(){
 		return BaseHandler.save(this);

@@ -1,6 +1,6 @@
 package com.slorm.core;
 
-import com.slorm.BaseDao;
+import com.slorm.SlormDao;
 import com.slorm.annocation.Column;
 import com.slorm.annocation.Quote;
 import com.slorm.annocation.Table;
@@ -57,8 +57,8 @@ public final class MapContainer {
 
 	// 解析类并保存起来
 	private static void parseClass(Class<?> c) {
-		if(c.equals(BaseDao.class) || !BaseDao.class.isAssignableFrom(c))
-			throw new RuntimeException("the class["+c.getName()+"] must be a subClass of "+BaseDao.class.getSimpleName());
+		if(c.equals(SlormDao.class) || !SlormDao.class.isAssignableFrom(c))
+			throw new RuntimeException("the class["+c.getName()+"] must be a subClass of "+SlormDao.class.getSimpleName());
 		
 		ClassToTable ctt = new ClassToTable();
 		List<Method> ms = Util.toList(c.getDeclaredMethods());

@@ -331,7 +331,7 @@ public final class Restriction<T> {
 	 * 
 	 * @param fields
 	 *            named fields's example : "field1, field2, field3, field4"
-	 * @return The unique model selected
+	 * @return The unique com.slorm.test.model selected
 	 */
 	public T $getColumns(String fields){
 		fields = SQLContainer.filterSQL(fields, clazz);
