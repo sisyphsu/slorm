@@ -60,10 +60,8 @@ public class User extends SlormDao<User> {
 
 	private Date datetime;
 
-    @UnColumn
-    private String dont_mapping;
-
-    /*  getter and setter  */
+	@UnColumn
+	private String dont_mapping;
 
 }
 ```
