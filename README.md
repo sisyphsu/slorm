@@ -53,7 +53,7 @@ user.$delete();
 将数据源配置在Spring容器中即可，Slorm会在运行时主动到Spring中搜索数据源，但这只限于web应用。
 
 普通J2SE程序使用Slorm的话，需要在classpath中添加配置文件slorm.properties：
-```
+```java
 dataSource.dataSourceName.driverClass=org.gjt.mm.mysql.Driver
 dataSource.dataSourceName.user=blah
 dataSource.dataSourceName.password=blah
@@ -64,7 +64,7 @@ Slorm也支持配置多个数据源，只要将dataSourceName修改为其他名�
 3、编写POJO：
 
 Slorm使用继承方式来增强POJO功能，因此你的POJO需要继承SlormDao。
-```
+```java
 public class User extends SlormDao<User> {
 	private Integer id;
 	private String name;
@@ -76,7 +76,7 @@ public class User extends SlormDao<User> {
 
 此时，User类就可以像**介绍**中那样进行CURD操作了。
 
-```
+```java
 User user = new User();
 user.setName("hello world");
 user.$save();   // 返回数据库自增主键 1
@@ -92,7 +92,7 @@ user.$delete();
 
 Slorm支持注解方式自定义POJO与数据库的映射关系，如下：
 
-```
+```java
 @Table(tableName = "user", dataSource = "test")
 public class User extends SlormDao<User> {
 
