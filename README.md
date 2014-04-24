@@ -52,14 +52,14 @@ user.$delete();
 
 将数据源配置在Spring容器中即可，Slorm会在运行时主动到Spring中搜索数据源，但这只限于web应用。
 
-普通J2SE程序使用Slorm的话，需要在classpath中添加配置文件slorm.properties：
+普通J2SE程序使用Slorm的话，需要在classpath中添加配置文件**slorm.properties**：
 ```java
 dataSource.dataSourceName.driverClass=org.gjt.mm.mysql.Driver
 dataSource.dataSourceName.user=blah
 dataSource.dataSourceName.password=blah
 dataSource.dataSourceName.url=blah
 ```
-Slorm也支持配置多个数据源，只要将dataSourceName修改为其他名字即可。
+Slorm也支持多数据源配置，只要将dataSourceName修改为其他名字即可。
 
 **3、编写POJO：**
 
@@ -109,7 +109,7 @@ public class User extends SlormDao<User> {
 	@UnColumn
 	private String dont_mapping;
 
-	@Quote("target.user_id = this.id")
+	@Quote("target.friend_id = this.id")
 	private User friend;
 
 }
@@ -132,6 +132,6 @@ Slorm本身并没有封装事务操作，但它可以利用Spring的事务管理
 
 ## 备注
 
-Slorm于2012年8月完成，并且已经在多个项目中使用，但它尚未成熟。
+Slorm于2012年8月完成，并且已经在多个项目中使用，但它并不是很城市，但应付中小型应用绰绰有余。
 
 Slorm的目的是，在极简的前提上，提供不逊于Hibernate和IBatis的功能。
