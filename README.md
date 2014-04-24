@@ -105,7 +105,7 @@ public class User extends SlormDao<User> {
 	private String password;
 
 	@UnColumn
-	private Date datetime;
+	private String dont_mapping;
 
 	@Quote("target.user_id = this.id")
 	private User friend;
@@ -131,3 +131,5 @@ Slorm本身并没有封装事务操作，但它可以利用Spring的事务管理
 ## 备注
 
 Slorm于2012年8月完成，并且已经在多个项目中使用，但它尚未成熟。
+
+Slorm的目的是，在极简的前提上，提供不逊于Hibernate和IBatis的功能。
