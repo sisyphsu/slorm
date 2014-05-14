@@ -6,7 +6,14 @@
 
 	<groupId>slorm</groupId>
 	<artifactId>slorm</artifactId>
-	<version>1.0</version>
+	<version>1.1.2</version>
+
+	<distributionManagement>
+		<repository>
+			<id>osc</id>
+			<url>http://maven.oschina.net/content/repositories/thirdparty/</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>

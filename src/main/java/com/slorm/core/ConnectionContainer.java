@@ -7,7 +7,9 @@ import com.slorm.connection.SpringConnectionWrapper;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,35 +18,37 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Connection manager container. it accepts the DataSources initialized from the properties configuration file 
+ * Connection manager container. it accepts the DataSources initialized from the properties configuration file
  * or the DataSources seek from Spring container.
- * 
+ *
  * This class will first seek the named properties file that contain the configuration message, if that file exists,
  * this class will initialize all the DataSources and generate all the ConnectionWrapper. if not, this class will try
  * to seek the DataSources from Springframework, if all fails, this class will throw a RuntimeException.
  *
- * After initializing, this class will generate the ConnectionWrappers from the DataSources. the ConnectionWrapper is 
+ * After initializing, this class will generate the ConnectionWrappers from the DataSources. the ConnectionWrapper is
  * used for JDBC operating, details of the specific Connection management strategy is in the class ConnectionWrapper.
- * 
- * Created by sulin on 2012-4-25.
+ *
+ * @author sulin
+ * @date 2012-4-25
  */
 public final class ConnectionContainer {
 
 	/**
 	 * Configuration properties file name
 	 */
-	private static final String PROPS_FILE = "slorm.properties";
-	
+	private static final String propsFileName = "magicotm.properties";
+
 	/**
 	 * the mapping table of ConnectionWrapper. this property will not be modified at runtime.
 	 */
 	private static Map<String, ConnectionWrapper> connections;
-	
+
 	static{
+		String classesPath = SQLContainer.class.getClassLoader().getResource("").toString().substring(5);
 		connections = new HashMap<String, ConnectionWrapper>();
 		try {
 			Properties props = new Properties();
-			props.load(ClassLoader.getSystemResourceAsStream(PROPS_FILE));
+			props.load(new FileReader(new File(classesPath, propsFileName)));
 			Map<String, ComboPooledDataSource> dataSources = new HashMap<String, ComboPooledDataSource>();
 			for (Object _key : props.keySet()) {
 				String key = _key.toString();
@@ -81,19 +85,20 @@ public final class ConnectionContainer {
 					}
 				}
 			}catch(Exception ee){
+
 				throw new RuntimeException("Cann't get DataSource from springframework !", ee);
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Exception occurs when reading " + PROPS_FILE, e);
+			throw new RuntimeException("Exception occurs when reading " + propsFileName, e);
 		}
-		
+
 		if(connections.keySet().size() >= 1){
 			connections.put("", (ConnectionWrapper) connections.values().toArray()[0]);
 		}else{
 			throw new NullPointerException("there isn't available DataSource");
 		}
 	}
-	
+
 	private static void setProp(ComboPooledDataSource cpds, String key, String value) throws PropertyVetoException {
 		// necessary
 		if (key.endsWith(".driverClass")) {
@@ -168,11 +173,11 @@ public final class ConnectionContainer {
 			cpds.setUsesTraditionalReflectiveProxies(Boolean.parseBoolean(value));
 		}
 	}
-	
+
 	/**
 	 * According to the specific DataSource's name, seek a suitable Connection used for JDBC operating.
 	 * if the specific dataSourceName is null, then return the first ConnectionWrapper stored, if it cann't seek any Connection, return null.
-	 * 
+	 *
 	 * @param dataSourceName the name of the DataSource.
 	 * @return the Connection seek or null.
 	 */
@@ -181,7 +186,7 @@ public final class ConnectionContainer {
 			dataSourceName = "";
 		return connections.get(dataSourceName);
 	}
-	
+
 	/**
 	 * Release the Connection, accurate to say, release the thread-Connection.
 	 * @param dataSourceName the name of the DataSource.
@@ -193,5 +198,5 @@ public final class ConnectionContainer {
 		ConnectionWrapper cw = connections.get(dataSourceName);
 		cw.close();
 	}
-	
+
 }
