@@ -7,3 +7,5 @@ Restriciton在page后，无法再次count，应该是内部结构发生了变化
 分页有问题，功能定义不清晰。
 
 懒加载部分必须有缓存支持。
+
+对外暴露的ResultSet应该改为Map，ResultSet只应该出现在底层JDBC处。
