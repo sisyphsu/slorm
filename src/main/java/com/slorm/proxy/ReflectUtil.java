@@ -55,7 +55,7 @@ public final class ReflectUtil {
 	public static final String WRAPPERSUFFIX = "$ReflectWrapper";
 	
 	// 获取Model封装器
-	private static ModelWrapper getWrapper(Class<?> clazz){
+	private static synchronized ModelWrapper getWrapper(Class<?> clazz){
 		while(clazz.getName().endsWith(PROXYSUFFIX))
 			clazz = clazz.getSuperclass();
 		ModelWrapper mw = container.get(clazz);
@@ -160,13 +160,12 @@ public final class ReflectUtil {
 		}
 		
 		try {
-			mw = (ModelWrapper) wrapper.toClass().newInstance();;
+			mw = (ModelWrapper) wrapper.toClass().newInstance();
 			container.putIfAbsent(clazz, mw);
-			return container.get(clazz);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// ignore
 		}
-		return null;
+		return container.get(clazz);
 	}
 	
 }
