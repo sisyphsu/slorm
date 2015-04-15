@@ -374,8 +374,6 @@ public final class BaseHandler {
 			HashMap<Property, Integer> columns = new HashMap<Property, Integer>();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			for(int i=1; i<=rsmd.getColumnCount(); i++){
-				if(!rsmd.getTableName(i).equals(ctt.getTableName()))
-					continue;
 				for(Property p : ctt.getProps()){
 					if(p.getColumn().equals(rsmd.getColumnName(i))){
 						columns.put(p, i);

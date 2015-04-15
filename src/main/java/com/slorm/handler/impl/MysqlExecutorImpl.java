@@ -1,29 +1,17 @@
 package com.slorm.handler.impl;
 
+import com.slorm.core.*;
+import com.slorm.handler.Executor;
+import com.slorm.operation.*;
+import com.sun.rowset.CachedRowSetImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
-
-import com.slorm.core.Assert;
-import com.slorm.core.ClassToTable;
-import com.slorm.core.DataConverter;
-import com.slorm.core.MapContainer;
-import com.slorm.core.Property;
-import com.slorm.handler.Executor;
-import com.slorm.operation.DeleteOperation;
-import com.slorm.operation.FunctionOperation;
-import com.slorm.operation.SQLSelectOperation;
-import com.slorm.operation.SaveOperation;
-import com.slorm.operation.SelectOperation;
-import com.slorm.operation.UpdateOperation;
-
-import com.sun.rowset.CachedRowSetImpl;
 
 /**
  * Mysql数据库的增删改查操作执行器. <br>
@@ -32,6 +20,8 @@ import com.sun.rowset.CachedRowSetImpl;
  * @date 2012-4-18 上午09:39:47
  */
 public class MysqlExecutorImpl implements Executor {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MysqlExecutorImpl.class);
 
 	/**
 	 * 是否打印sql语句
@@ -59,10 +49,9 @@ public class MysqlExecutorImpl implements Executor {
 			sb.append('?');
 		}
 		sb.append(')');
-		
+
+		LOGGER.debug("EXECUTE SAVE: {}", sb);
 		PreparedStatement ps = save.getConn().prepareStatement(sb.toString(), Statement.RETURN_GENERATED_KEYS);
-		if(isShowSQL)
-			System.out.println(sb.toString());
 		// 装配参数
 		for(int i=0, size=save.getColumns().size(); i<size; i++){
 			Property p = save.getColumns().get(i);
@@ -110,9 +99,7 @@ public class MysqlExecutorImpl implements Executor {
 			sb.append('`' + columns.get(i).getColumn() + '`').append("=?");
 		}
 		sb.append(temp.getSql());
-		if(isShowSQL)
-			System.out.println(sb.toString());
-		
+		LOGGER.debug("EXECUTE UPDATE: {}", sb);
 		PreparedStatement ps = update.getConn().prepareStatement(sb.toString());
 		// 设置更新参数
 		int index = 0, size = 0;
@@ -144,9 +131,8 @@ public class MysqlExecutorImpl implements Executor {
 		}
 		int lines = ps.executeUpdate();
 		ps.close();
-		if(isShowSQL)
-			System.out.println("update rows : " + lines);
-		
+		LOGGER.debug("EXECUTE UPDATE: rows={}", lines);
+
 		return lines;
 	}
 
@@ -158,8 +144,7 @@ public class MysqlExecutorImpl implements Executor {
 		sql.append("DELETE FROM ").append('`' + delete.getTableName() + '`');
 		ParsedRestriction pr = MysqlRestrictionParser.parseRestriction(delete.getRestriction());
 		sql.append(pr.getSql());
-		if(isShowSQL)
-			System.out.println(sql.toString());
+		LOGGER.debug("EXECUTE DELETE: {}", sql);
 		PreparedStatement ps = delete.getConn().prepareStatement(sql.toString());
 		for(int i=0,size=pr.getColumns().size(); i<size; i++){
 			Property p = pr.getColumns().get(i);
@@ -172,9 +157,8 @@ public class MysqlExecutorImpl implements Executor {
 		}
 		int lines = ps.executeUpdate();
 		ps.close();
-		if(isShowSQL)
-			System.out.println("delete rows : " + lines);
-		
+		LOGGER.debug("EXECUTE DELETE: rows={}", lines);
+
 		return lines;
 	}
 
