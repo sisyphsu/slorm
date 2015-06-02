@@ -5,6 +5,8 @@ import com.slorm.operation.*;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库操作规范，每个数据库操作必须实现此接口。
@@ -42,7 +44,7 @@ public interface Executor {
 	 * @param select 查询操作对象
 	 * @return 查询到的离线结果集
 	 */
-	public ResultSet select(SelectOperation select) throws SQLException;
+	public List<Map<String, Object>> select(SelectOperation select) throws SQLException;
 	
 	
 	/**
@@ -50,7 +52,7 @@ public interface Executor {
 	 * @param sqlSelect     sql查询
 	 * @return 查询到的离线结果集
 	 */
-	public ResultSet selectBySQL(SQLSelectOperation sqlSelect) throws SQLException;
+	public List<Map<String, Object>> selectBySQL(SQLSelectOperation sqlSelect) throws SQLException;
 	
 	
 	/**

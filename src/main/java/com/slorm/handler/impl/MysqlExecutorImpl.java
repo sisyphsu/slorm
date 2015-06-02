@@ -3,7 +3,6 @@ package com.slorm.handler.impl;
 import com.slorm.core.*;
 import com.slorm.handler.Executor;
 import com.slorm.operation.*;
-import com.sun.rowset.CachedRowSetImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mysql数据库的增删改查操作执行器. <br>
@@ -165,7 +167,7 @@ public class MysqlExecutorImpl implements Executor {
 	/**
 	 * 查询操作执行方法
 	 */
-	public ResultSet select(SelectOperation select) throws SQLException {
+	public List<Map<String, Object>> select(SelectOperation select) throws SQLException {
 		// 解析限定条件
 		ParsedRestriction temp = MysqlRestrictionParser.parseRestriction(select.getRestriction());
 		List<Property> columns = select.getColumns();
@@ -195,21 +197,16 @@ public class MysqlExecutorImpl implements Executor {
 			}
 		}
 		// 执行查询并返回离线结果集
-		CachedRowSetImpl result = new CachedRowSetImpl();
-		ResultSet rs = ps.executeQuery();
-		result.populate(rs);
-		rs.close();
-		ps.close();
-		if(isShowSQL)
-			System.out.println("select rows : " + result.size());
-		
-		return result;
+        ResultSet rs = ps.executeQuery();
+        List<Map<String, Object>> data = parseResultSet(rs);
+        rs.close();
+		return data;
 	}
 
 	/**
 	 * SQL查询操作执行方法
 	 */
-	public ResultSet selectBySQL(SQLSelectOperation sqlSelect) throws SQLException {
+	public List<Map<String, Object>> selectBySQL(SQLSelectOperation sqlSelect) throws SQLException {
 		Assert.isNotNull(sqlSelect);
 		if(isShowSQL)
 			System.out.println(sqlSelect.getSql());
@@ -230,16 +227,11 @@ public class MysqlExecutorImpl implements Executor {
 				}
 			}
 		}
-		// 执行查询并返回离线结果集
-		CachedRowSetImpl result = new CachedRowSetImpl();
-		ResultSet rs = ps.executeQuery();
-		result.populate(rs);
-		rs.close();
-		ps.close();
-		if(isShowSQL)
-			System.out.println("select rows : " + result.size());
-		
-		return result;
+        // 执行查询并返回离线结果集
+        ResultSet rs = ps.executeQuery();
+        List<Map<String, Object>> data = parseResultSet(rs);
+        rs.close();
+        return data;
 	}
 
 	/**
@@ -300,5 +292,22 @@ public class MysqlExecutorImpl implements Executor {
 		
 		return result;
 	}
-	
+
+    // 将底层resultSet解析为Map数组
+    private List<Map<String, Object>> parseResultSet(ResultSet rs) throws SQLException {
+        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        List<String> head = new ArrayList<String>();
+        for (int i=0; i<rs.getMetaData().getColumnCount(); i++){
+            head.add(rs.getMetaData().getColumnName(i));
+        }
+        while (rs.next()){
+            Map<String, Object> row = new HashMap<String, Object>();
+            for (String column : head){
+                row.put(column, rs.getObject(column));
+            }
+            data.add(row);
+        }
+        return data;
+    }
+
 }

@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -243,7 +244,7 @@ public final class BaseHandler {
 	 * @param types 预处理参数SQL数据类型
 	 * @return 查询到的离线结果集
 	 */
-	public static ResultSet nativeSQL(Class<?> clazz, String sql, Object[] params, int[] types){
+	public static List<Map<String, Object>> nativeSQL(Class<?> clazz, String sql, Object[] params, int[] types){
 		ClassToTable ctt = MapContainer.getCCT(clazz);
 		SQLSelectOperation sqlSelect = new SQLSelectOperation();
 		sqlSelect.setConn(ConnectionContainer.getConnection(ctt.getDataSource()));
@@ -365,40 +366,17 @@ public final class BaseHandler {
 	 * @param clazz java类型
 	 * @return clazz的实例数组
 	 */
-	public static<T> List<T> parseResultSet(ResultSet rs, Class<T> clazz){
+	public static<T> List<T> parseResultSet(List<Map<String, Object>> rs, Class<T> clazz){
 		ClassToTable ctt = MapContainer.getCCT(clazz);
-		try {
-			if(!rs.first())
-				return null;
-			// 解析元数据
-			HashMap<Property, Integer> columns = new HashMap<Property, Integer>();
-			ResultSetMetaData rsmd = rs.getMetaData();
-			for(int i=1; i<=rsmd.getColumnCount(); i++){
-				for(Property p : ctt.getProps()){
-					if(p.getColumn().equals(rsmd.getColumnName(i))){
-						columns.put(p, i);
-						break;
-					}
-				}
-			}
-			// 解析数据
-			List<T> result = new ArrayList<T>();
-			if(rs.first()){
-				do{
-					T t = (T) ReflectUtil.newInstance(clazz);
-					for(Property column : columns.keySet()){
-						Object value = rs.getObject(columns.get(column));
-						if(value != null){
-							column.setter(t, value);
-						}
-					}
-					result.add(t);
-				}while(rs.next());
-			}
-			return result;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+        List<T> result = new ArrayList<T>();
+        for (Map<String, Object> row : rs){
+            T item = (T) ReflectUtil.newInstance(clazz);
+            for(Property p : ctt.getProps()){
+                p.setter(item, row.get(p.getColumn()));
+            }
+            result.add(item);
+        }
+        return result;
 	}
 	
 	// 获取执行器

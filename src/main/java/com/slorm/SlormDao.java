@@ -5,10 +5,10 @@ import com.slorm.handler.BaseHandler;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DA操作基类, 此基类提供了一系列用于JDBC操作的扩展方法<br>
@@ -133,7 +133,7 @@ public abstract class SlormDao<T> {
 		return (List<T>) BaseHandler.selectBySQL(this.getClass(), sql, params, types);
 	}
 	
-	public ResultSet $nativeSQL(String sql, Object[] params, int[] types){
+	public List<Map<String, Object>> $nativeSQL(String sql, Object[] params, int[] types){
 		sql = SQLContainer.filterSQL(sql, this.getClass());
 		return BaseHandler.nativeSQL(getClass(), sql, params, types);
 	}
