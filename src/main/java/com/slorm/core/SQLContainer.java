@@ -39,7 +39,7 @@ public final class SQLContainer {
 	 * 如果读取自SQL.xml后缀的文件，则key命名为"SQL&SQL语句名"
 	 */
 	private static Map<String, String> sqlMaps = new HashMap<String, String>();
-	
+
 	static{
 		String classesPath = SQLContainer.class.getClassLoader().getResource("").toString().substring(5);
 		List<File> xmlFiles = scanXML(new File(classesPath));
@@ -56,7 +56,7 @@ public final class SQLContainer {
 					if(xmlFile.getName().endsWith("GlobalSQL.xml")){
 						prefix = "SQL&";
 					}else{
-						prefix = xmlFile.getName().toLowerCase().substring(0, xmlFile.getName().toLowerCase().indexOf(".xml")) + "&";
+						prefix = xmlFile.getName().substring(0, xmlFile.getName().toLowerCase().indexOf(".xml")) + "&";
 					}
 					scanSQL(db.parse(xmlFile), prefix);
 				} catch (Exception e) {
