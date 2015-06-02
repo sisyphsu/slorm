@@ -298,7 +298,7 @@ public class MysqlExecutorImpl implements Executor {
         List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
         List<String> head = new ArrayList<String>();
         for (int i=0; i<rs.getMetaData().getColumnCount(); i++){
-            head.add(rs.getMetaData().getColumnName(i));
+            head.add(rs.getMetaData().getColumnName(i + 1));
         }
         while (rs.next()){
             Map<String, Object> row = new HashMap<String, Object>();
