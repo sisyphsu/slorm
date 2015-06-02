@@ -41,16 +41,7 @@ public class SpringConnectionWrapper extends ConnectionWrapper{
 	 * @throws java.sql.SQLException
 	 */
 	protected Connection getThreadConnection() throws SQLException{
-		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-		if (conHolder != null && conHolder.isSynchronizedWithTransaction()) {
-			conHolder.requested();
-			return conHolder.getConnection(); // ?????? is it right?
-		}
-		Connection conn = this.threadConnection.get();
-		if(conn == null){
-			conn = this.dataSource.getConnection();
-			this.threadConnection.set(conn);
-		}
+		Connection conn = this.dataSource.getConnection();
 		return conn;
 	}
 	

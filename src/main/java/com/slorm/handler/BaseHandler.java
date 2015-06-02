@@ -56,14 +56,15 @@ public final class BaseHandler {
 		try {
 			return getExecutor(save.getConn()).save(save);
 		} catch (SQLException e) {
-			try {
-				save.getConn().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			throw new RuntimeException("Exception occurs during executing JDBC INSERT ! ", e);
-		}
-	}
+		} finally {
+            try {
+                save.getConn().close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 	
 	/**
 	 * 数据删除操作处理。
@@ -93,14 +94,15 @@ public final class BaseHandler {
 		try {
 			return getExecutor(delete.getConn()).delete(delete);
 		} catch (SQLException e) {
-			try {
-				delete.getConn().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			throw new RuntimeException("Exception occurs during JDBC DELETE ! ", e);
-		}
-	}
+		} finally {
+            try {
+                delete.getConn().close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 	
 	/**
 	 * 数据更新操作处理。
@@ -136,14 +138,15 @@ public final class BaseHandler {
 		try {
 			return getExecutor(update.getConn()).update(update);
 		} catch (SQLException e) {
-			try {
-				update.getConn().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			throw new RuntimeException("Exception occurs during JDBC UPDATE ! ", e);
-		}
-	}
+		} finally {
+            try {
+                update.getConn().close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 	
 	/**
 	 * 数据单一查询操作处理。如果查询到的对象不单一，则抛出NotUniqueResultException异常！！！
@@ -206,18 +209,19 @@ public final class BaseHandler {
 			select.setColumns(ctt.getProps());
 		}
 		
-		List<T> result = null;
+		List<T> result;
 		try {
 			result = parseResultSet(getExecutor(select.getConn()).select(select), clazz);
 		} catch (SQLException e) {
-			try {
-				select.getConn().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			throw new RuntimeException("Exception occurs during JDBC SELECT ! ", e);
-		}
-		
+		} finally {
+            try {
+                select.getConn().close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+
 		if(result==null || result.isEmpty())
 			return null;
 		return result;
@@ -255,14 +259,15 @@ public final class BaseHandler {
 		try {
 			return getExecutor(sqlSelect.getConn()).selectBySQL(sqlSelect);
 		} catch (SQLException e) {
-			try {
-				sqlSelect.getConn().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			throw new RuntimeException("Exception occurs during JDBC SELECT by SQL ! ", e);
-		}
-	}
+		} finally {
+            try {
+                sqlSelect.getConn().close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 	
 	/**
 	 * 根据指定SQL函数进行查询
@@ -292,72 +297,15 @@ public final class BaseHandler {
 		try {
 			return getExecutor(function.getConn()).function(function);
 		} catch (SQLException e) {
-			try {
-				function.getConn().close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			throw new RuntimeException("Exception occurs during JDBC SELECT by FUNCTION ! ", e);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param name
-	 * @param obj
-	 * @return
-	 */
-	public static void loadProxy(String name, Object obj){
-		ClassToTable ctt = null;
-		if(obj.getClass().getName().endsWith(ReflectUtil.PROXYSUFFIX)){
-			ctt = MapContainer.getCCT(obj.getClass().getSuperclass());
-		}else{
-			ctt = MapContainer.getCCT(obj.getClass());
-		}
-		for(Reference ref : ctt.getQuotes()){
-			if(ref.getName().equals(name)){
-				Object[] params = new Object[ref.getThisName().size()];
-				int[] types = new int[ref.getThisName().size()];
-				for(int i=0, size=ref.getThisName().size(); i<size; i++){
-					Object value = ReflectUtil.get(obj, ref.getThisName().get(i));
-					params[i] = value;
-					types[i] = ref.getThisType().get(i);
-				}
-				
-				ClassToTable ctt_ = MapContainer.getCCT(ref.getRealTargetType());
-				SQLSelectOperation sqlSelect = new SQLSelectOperation();
-				sqlSelect.setParams(params);
-				sqlSelect.setSql(ref.getSql());
-				sqlSelect.setTypes(types);
-				try {
-					sqlSelect.setConn(((ConnectionWrapper)ConnectionContainer.getConnection(ctt_.getDataSource())).getReadOnlyConnection());
-				} catch (SQLException e) {
-					try {
-						sqlSelect.getConn().close();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-					throw new RuntimeException("Cannot gain the available ReadOnly-Connection!", e);
-				}
-				
-				List<?> result = null;
-				
-				try {
-					result = parseResultSet(getExecutor(sqlSelect.getConn()).selectBySQL(sqlSelect), ref.getRealTargetType());
-				} catch (SQLException e) {
-					try {
-						sqlSelect.getConn().close();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-					throw new RuntimeException("Exception occurs during JDBC SELECT by SQL ! ", e);
-				}
-				
-				if(result!=null && !result.isEmpty())
-					ref.setter(obj, result);
-			}
-		}
-	}
+		} finally {
+            try {
+                function.getConn().close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 	
 	/**
 	 * 离线结果集解析方法，根据指定java类型clazz，从结果集中提取出属于此clazz的所有列并组装出新的对象。
