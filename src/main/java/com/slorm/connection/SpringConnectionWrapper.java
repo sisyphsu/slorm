@@ -26,12 +26,12 @@ public class SpringConnectionWrapper extends ConnectionWrapper{
 	 */
 	public SpringConnectionWrapper(DataSource dataSource) throws SQLException {
 		this.dataSource = dataSource;
-		this.deamonConnection = dataSource.getConnection();
-		this.deamonConnection.setAutoCommit(true);
-		this.readConnection = dataSource.getConnection();
-		this.readConnection.setAutoCommit(true);
-		this.readConnection.setReadOnly(true);
-		this.threadConnection = new ThreadLocal<Connection>();
+        this.threadConnection = new ThreadLocal<Connection>();
+//		this.deamonConnection = dataSource.getConnection();
+//		this.deamonConnection.setAutoCommit(true);
+//		this.readConnection = dataSource.getConnection();
+//		this.readConnection.setAutoCommit(true);
+//		this.readConnection.setReadOnly(true);
 	}
 	
 	/**
@@ -41,39 +41,24 @@ public class SpringConnectionWrapper extends ConnectionWrapper{
 	 * @throws java.sql.SQLException
 	 */
 	protected Connection getThreadConnection() throws SQLException{
-		Connection conn = this.dataSource.getConnection();
-		return conn;
+        if (threadConnection.get() == null)
+            threadConnection.set(getConnection());
+		return threadConnection.get();
 	}
-	
+
 	/**
 	 * obtains a Connection used for JDBC operating.
 	 * @throws java.sql.SQLException
 	 */
 	protected Connection getConnection() throws SQLException {
-		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-		if (conHolder != null && conHolder.isSynchronizedWithTransaction()) {
-			conHolder.requested();
-			return conHolder.getConnection(); // ?????? is it right?
-		}
-		Connection conn = this.threadConnection.get();
-		if(conn == null)
-			conn = this.getDeamonConnection();
-		return conn;
+		return this.dataSource.getConnection();
 	}
 
 	/**
 	 * obtains a read Connection used for JDBC read-only operating
 	 */
 	public synchronized Connection getReadOnlyConnection() throws SQLException {
-		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-		if (conHolder != null && conHolder.isSynchronizedWithTransaction()) {
-			conHolder.requested();
-			return conHolder.getConnection(); // ?????? is it right?
-		}
-		Connection conn = this.threadConnection.get();
-		if(conn != null)
-			return conn;
-		return super.getReadOnlyConnection();
+        return getConnection();
 	}
 
 	/*********************JDBC新加方法**********************/

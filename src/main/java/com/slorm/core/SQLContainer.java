@@ -173,10 +173,7 @@ public final class SQLContainer {
 				}
 			}
 		}
-		for(String s : sqlMaps.keySet()){
-			System.out.println(s + " : " + sqlMaps.get(s));
-		}
-		
+
 		return sql;
 	}
 	

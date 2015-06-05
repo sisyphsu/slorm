@@ -85,30 +85,31 @@ public abstract class ConnectionWrapper implements Connection{
 	 * @return read-only Connection
 	 */
 	public synchronized Connection getReadOnlyConnection() throws SQLException{
-		if(this.readConnection==null){
-			this.readConnection = dataSource.getConnection();
-			this.readConnection.setAutoCommit(true);
-			this.readConnection.setReadOnly(true);
-		}else{
-			try{
-				if(this.readConnection.isClosed()){ // in normal, it won't happen.
-					this.readConnection = dataSource.getConnection();
-					this.readConnection.setAutoCommit(true);
-					this.readConnection.setReadOnly(true);
-				}
-			}catch(Exception e){
-				try{
-					this.readConnection.close();
-				}catch(Exception no){
-					// ignore......
-				}
-				this.readConnection = dataSource.getConnection();
-				this.readConnection.setAutoCommit(true);
-				this.readConnection.setReadOnly(true);
-				throw new RuntimeException("Unknow SQLException occurs, the deamonConnection was replaced.", e);
-			}
-		}
-		return this.readConnection;
+        return getConnection();
+//		if(this.readConnection==null){
+//			this.readConnection = dataSource.getConnection();
+//			this.readConnection.setAutoCommit(true);
+//			this.readConnection.setReadOnly(true);
+//		}else{
+//			try{
+//				if(this.readConnection.isClosed()){ // in normal, it won't happen.
+//					this.readConnection = dataSource.getConnection();
+//					this.readConnection.setAutoCommit(true);
+//					this.readConnection.setReadOnly(true);
+//				}
+//			}catch(Exception e){
+//				try{
+//					this.readConnection.close();
+//				}catch(Exception no){
+//					// ignore......
+//				}
+//				this.readConnection = dataSource.getConnection();
+//				this.readConnection.setAutoCommit(true);
+//				this.readConnection.setReadOnly(true);
+//				throw new RuntimeException("Unknow SQLException occurs, the deamonConnection was replaced.", e);
+//			}
+//		}
+//		return this.readConnection;
 	}
 	
 	/**
@@ -116,27 +117,28 @@ public abstract class ConnectionWrapper implements Connection{
 	 * @return deamon Connection
 	 */
 	public synchronized Connection getDeamonConnection() throws SQLException{
-		if(this.deamonConnection==null){
-			this.deamonConnection = dataSource.getConnection();
-			this.deamonConnection.setAutoCommit(true);
-		}else{
-			try{
-				if(this.deamonConnection.isClosed()){ // in normal, it won't happen.
-					this.deamonConnection = dataSource.getConnection();
-					this.deamonConnection.setAutoCommit(true);
-				}
-			}catch(Exception e){
-				try{
-					this.deamonConnection.close();
-				}catch(Exception no){
-					// ignore......
-				}
-				this.deamonConnection = dataSource.getConnection();
-				this.deamonConnection.setAutoCommit(true);
-				throw new RuntimeException("Unknow SQLException occurs, the deamonConnection was replaced.", e);
-			}
-		}
-		return this.deamonConnection;
+        return getConnection();
+//		if(this.deamonConnection==null){
+//			this.deamonConnection = dataSource.getConnection();
+//			this.deamonConnection.setAutoCommit(true);
+//		}else{
+//			try{
+//				if(this.deamonConnection.isClosed()){ // in normal, it won't happen.
+//					this.deamonConnection = dataSource.getConnection();
+//					this.deamonConnection.setAutoCommit(true);
+//				}
+//			}catch(Exception e){
+//				try{
+//					this.deamonConnection.close();
+//				}catch(Exception no){
+//					// ignore......
+//				}
+//				this.deamonConnection = dataSource.getConnection();
+//				this.deamonConnection.setAutoCommit(true);
+//				throw new RuntimeException("Unknow SQLException occurs, the deamonConnection was replaced.", e);
+//			}
+//		}
+//		return this.deamonConnection;
 	}
 	
 	//---------------------------------- Connection's native functions
