@@ -169,7 +169,7 @@ public abstract class ConnectionWrapper implements Connection{
 	 * Being sure that there is a Connection cached in the current thread.
 	 */
 	public void close() throws SQLException{
-		Connection conn = this.threadConnection.get();
+		Connection conn = getConnection();
 		if(conn != null){
 			// 线程链接关闭
 			conn.close();

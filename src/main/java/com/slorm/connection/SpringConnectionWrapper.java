@@ -42,7 +42,7 @@ public class SpringConnectionWrapper extends ConnectionWrapper{
 	 */
 	protected Connection getThreadConnection() throws SQLException{
         if (threadConnection.get() == null)
-            threadConnection.set(getConnection());
+            threadConnection.set(dataSource.getConnection());
 		return threadConnection.get();
 	}
 
@@ -51,7 +51,7 @@ public class SpringConnectionWrapper extends ConnectionWrapper{
 	 * @throws java.sql.SQLException
 	 */
 	protected Connection getConnection() throws SQLException {
-		return this.dataSource.getConnection();
+		return getThreadConnection();
 	}
 
 	/**
